@@ -22,7 +22,14 @@ public class MainActivity extends AppCompatActivity {
         Button but = (Button) findViewById(R.id.but);
         but.setOnClickListener(v -> Log.d("MainActivity", "clicked"));
 
+        List<String> lines = Arrays.asList("Annop", "AK", "Champ");
 
+        List result = lines.stream()
+                .filter(r -> r.contains("Ann"))
+                .map(r -> r + " KOBKIJ")
+                .collect(Collectors.toList());
+
+        result.forEach(r -> textView.setText(textView.getText() + " " + r));
     }
 
 }
