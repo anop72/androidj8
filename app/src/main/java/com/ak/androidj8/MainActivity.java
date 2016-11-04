@@ -8,21 +8,23 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
+
+    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView textView = (TextView) findViewById(R.id.text_view);
+        textView = (TextView) findViewById(R.id.text_view);
 
         Button but = (Button) findViewById(R.id.but);
         but.setOnClickListener(v -> makeRequest());
@@ -46,14 +48,20 @@ public class MainActivity extends AppCompatActivity {
 
         PokemonGateway gateway = ServerAPI.createRetrofitService(PokemonGateway.class);
 
-        Observable<Pokemon> observable = gateway.pokemon(20);
+        Random r = new Random();
+        int randomId = r.nextInt(100) + 1;
+
+        Observable<Pokemon> observable = gateway.pokemon(randomId);
 
         observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(Schedulers.io())
                 .subscribe(
-                        res -> log(res.name),
+                        res -> {
+                            textView.setText(res.name);
+                            log(res.name);
+                        },
                         error -> log("error")
                 );
     }
