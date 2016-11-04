@@ -10,6 +10,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -20,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.text_view);
 
         Button but = (Button) findViewById(R.id.but);
-        but.setOnClickListener(v -> Log.d("MainActivity", "clicked"));
+        but.setOnClickListener(v -> makeRequest());
 
         List<String> lines = Arrays.asList("Annop", "AK", "Champ");
 
@@ -30,6 +35,39 @@ public class MainActivity extends AppCompatActivity {
                 .collect(Collectors.toList());
 
         result.forEach(r -> textView.setText(textView.getText() + " " + r));
+
+    }
+
+    private void log(String msg) {
+        Log.d(MainActivity.class.getSimpleName(), msg);
+    }
+
+    private void makeRequest() {
+
+        PokemonGateway gateway = ServerAPI.createRetrofitService(PokemonGateway.class);
+
+        Observable<Pokemon> observable = gateway.pokemon(20);
+
+        observable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .unsubscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<Pokemon>() {
+                    @Override
+                    public void onCompleted() {
+                        log("onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        log(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(Pokemon pokemon) {
+                        log("onNext");
+                    }
+                });
     }
 
 }
