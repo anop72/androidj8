@@ -52,22 +52,10 @@ public class MainActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<Pokemon>() {
-                    @Override
-                    public void onCompleted() {
-                        log("onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        log(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(Pokemon pokemon) {
-                        log("onNext");
-                    }
-                });
+                .subscribe(
+                        res -> log(res.name),
+                        error -> log("error")
+                );
     }
 
 }
