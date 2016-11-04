@@ -39,4 +39,22 @@ public class PokemonGatewayTest {
 
     }
 
+    @Test
+    public void testSubscribeWithError() throws Exception {
+
+        String expected = "pokemon error";
+
+        TestSubscriber testSubscriber = new TestSubscriber<>();
+
+        Observable
+                .error(new Exception("pokemon error"))
+                .subscribe(testSubscriber);
+
+        String actual = ((Exception) testSubscriber.getOnErrorEvents().get(0)).getMessage();
+
+        testSubscriber.assertError(Exception.class);
+        assertEquals(expected, actual);
+
+    }
+
 }
